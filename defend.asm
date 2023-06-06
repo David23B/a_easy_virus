@@ -15,7 +15,8 @@ code segment
                mov    cx,0                       ;cx:属性
                mov    ah,4eh                     ;查找第一个匹配项
                int    21h
-               jc     error                      ;无匹配项直接结束
+               jnc    watch                      ;无匹配项直接结束
+               ret
     watch:     
                lea    dx,[bp+offset dta]         ;匹配结果再磁盘缓冲区中
                add    dx,1eh                     ;文件名地址

